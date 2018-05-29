@@ -1,0 +1,29 @@
+{
+  "name": "html-prefetch-css-webpack-plugin",
+  "version": "0.0.1",
+  "description": "prefetch css before dynamic import",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "peerDependencies": {
+    "webpack": "^4.6.0",
+    "html-webpack-plugin": "^3.2.0"
+  },
+  "author": "Qiang Sun <sun1993hlj@hotmail.com> (https://github.com/MarvelSQ)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url":
+      "git+https://github.com/MarvelSQ/html-prefetch-css-webpack-plugin.git"
+  },
+  "keywords": ["prefetch", "html", "css", "webpack"],
+  "bugs": {
+    "url": "https://github.com/MarvelSQ/html-prefetch-css-webpack-plugin/issues"
+  },
+  "homepage":
+    "https://github.com/MarvelSQ/html-prefetch-css-webpack-plugin#readme",
+  "dependencies": {
+    "chalk": "^2.4.1"
+  }
+}
