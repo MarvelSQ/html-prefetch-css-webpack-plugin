@@ -1,40 +1,33 @@
-const path = require("path");
-const chalk = require("chalk");
-
-const isCssJs = /(css|js)$/;
-const isJs = /js$/;
+const path = require('path')
+const chalk = require('chalk')
 
 class WebpackResourceHintPlugin {
-  /* eslint-disable */
-  apply(compiler) {
-    const self = this;
-    compiler.hooks.compilation.tap("WebpackResourceHintPlugin", compilation => {
+  apply (compiler) {
+    compiler.hooks.compilation.tap('WebpackResourceHintPlugin', compilation => {
       if (compilation.hooks.htmlWebpackPluginAlterAssetTags) {
         compilation.hooks.htmlWebpackPluginAlterAssetTags.tapAsync(
-          "ResourceHintWebpackPluginAlterAssetTags",
+          'ResourceHintWebpackPluginAlterAssetTags',
           (pluginData, callback) => {
-            const { chunks, head, plugin } = pluginData;
+            const { chunks, head, plugin } = pluginData
             // Use the configured public path or build a relative path
             let publicPath =
-              typeof compilation.options.output.publicPath !== "undefined"
-                ? // If a hard coded public path exists use it
-                  compilation.mainTemplate.getPublicPath({
-                    hash: compilationHash
-                  })
-                : // If no public path was set get a relative url path
-                  path
-                    .relative(
-                      path.resolve(
-                        compilation.options.output.path,
-                        path.dirname(plugin.childCompilationOutputName)
-                      ),
-                      compilation.options.output.path
-                    )
-                    .split(path.sep)
-                    .join("/");
+              typeof compilation.options.output.publicPath !== 'undefined'
+                ? compilation.mainTemplate.getPublicPath({
+                  hash: compilation.hash
+                })// If a hard coded public path exists use it
+                : path
+                  .relative(
+                    path.resolve(
+                      compilation.options.output.path,
+                      path.dirname(plugin.childCompilationOutputName)
+                    ),
+                    compilation.options.output.path
+                  )
+                  .split(path.sep)
+                  .join('/')// If no public path was set get a relative url path
 
-            if (publicPath.length && publicPath.substr(-1, 1) !== "/") {
-              publicPath += "/";
+            if (publicPath.length && publicPath.substr(-1, 1) !== '/') {
+              publicPath += '/'
             }
             // Get chunks info as json
             // Note: we're excluding stuff that we don't need to improve toJson serialization speed.
@@ -52,33 +45,32 @@ class WebpackResourceHintPlugin {
               source: false,
               timings: false,
               version: false
-            };
+            }
             const allChunks = compilation.getStats().toJson(chunkOnlyConfig)
-              .chunks;
+              .chunks
 
-            let prefetches = {};
-            let preloades = [];
+            let prefetches = {}
 
             for (let i = 0; i < chunks.length; i++) {
-              const chunk = chunks[i];
+              const chunk = chunks[i]
 
-              let { prefetch, preload } = chunk.childrenByOrder || {};
+              let { prefetch } = chunk.childrenByOrder || {}
               if (prefetch && Array.isArray(prefetch)) {
-                for (let f = 0; i < prefetch.length; i++) {
-                  const prefetchId = prefetch[i];
+                for (let f = 0; f < prefetch.length; f++) {
+                  const prefetchId = prefetch[f]
                   const prefetchChunk = allChunks.find(
                     ({ id }) => id === prefetchId
-                  );
+                  )
                   if (prefetchChunk) {
                     let prefetchFiles = []
                       .concat(prefetchChunk.files)
-                      .map(chunkFile => publicPath + chunkFile);
+                      .map(chunkFile => publicPath + chunkFile)
 
                     prefetchFiles.forEach(file => {
                       if (!prefetches[file]) {
-                        prefetches[file] = true;
+                        prefetches[file] = true
                       }
-                    });
+                    })
                   }
                 }
               }
@@ -87,30 +79,34 @@ class WebpackResourceHintPlugin {
             let appendedHead = Object.keys(prefetches)
               .filter(e => /css$/.test(e))
               .map(e => ({
-                tagName: "link",
+                tagName: 'link',
                 selfClosingTag: false,
                 voidTag: true,
                 attributes: {
-                  href: e,
-                  rel: "prefetch"
+                  href: `${e}?${compilation.hash}`,
+                  rel: 'prefetch'
                 }
-              }));
-            console.log("");
+              }))
+            console.log('')
             console.log(
-              chalk.black.bold("----------- Webpack Prefetch --------------")
-            );
-            console.log(
-              chalk.blue("Append Links:"),
-              chalk.green.bold(Object.keys(prefetches))
-            );
-            callback(null, { ...pluginData, head: [...appendedHead, ...head] });
+              chalk.black.bold('----------- Webpack Prefetch --------------')
+            )
+            if (appendedHead.length > 0) {
+              console.log(
+                chalk.blue('Append Links:'),
+                chalk.green.bold(Object.keys(prefetches).filter(e => /css$/.test(e)))
+              )
+            } else {
+              console.log(chalk.red('no css prefetched'))
+            }
+            callback(null, { ...pluginData, head: [...appendedHead, ...head] })
           }
-        );
+        )
       } else {
-        console.log(chalk.red("no html-webpack-plugin loaded"));
+        console.log(chalk.red('no html-webpack-plugin loaded'))
       }
-    });
+    })
   }
 }
 
-module.exports = WebpackResourceHintPlugin;
+module.exports = WebpackResourceHintPlugin
