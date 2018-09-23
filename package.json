@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "description": "prefetch css before dynamic import",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "webpack --config ./test/webpack.config.js",
     "test": "jest"
