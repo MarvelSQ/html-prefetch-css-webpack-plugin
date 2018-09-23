@@ -1,8 +1,26 @@
 const path = require('path')
 const chalk = require('chalk')
 
+// Get chunks info as json
+// Note: we're excluding stuff that we don't need to improve toJson serialization speed.
+const chunkOnlyConfig = {
+  assets: false,
+  cached: false,
+  children: false,
+  chunks: true,
+  chunkModules: false,
+  chunkOrigins: false,
+  errorDetails: false,
+  hash: false,
+  modules: false,
+  reasons: false,
+  source: false,
+  timings: false,
+  version: false
+}
+
 class WebpackResourceHintPlugin {
-  apply (compiler) {
+  apply(compiler) {
     compiler.hooks.compilation.tap('WebpackResourceHintPlugin', compilation => {
       if (compilation.hooks.htmlWebpackPluginAlterAssetTags) {
         compilation.hooks.htmlWebpackPluginAlterAssetTags.tapAsync(
@@ -13,68 +31,54 @@ class WebpackResourceHintPlugin {
             let publicPath =
               typeof compilation.options.output.publicPath !== 'undefined'
                 ? compilation.mainTemplate.getPublicPath({
-                  hash: compilation.hash
-                })// If a hard coded public path exists use it
+                    hash: compilation.hash
+                  }) // If a hard coded public path exists use it
                 : path
-                  .relative(
-                    path.resolve(
-                      compilation.options.output.path,
-                      path.dirname(plugin.childCompilationOutputName)
-                    ),
-                    compilation.options.output.path
-                  )
-                  .split(path.sep)
-                  .join('/')// If no public path was set get a relative url path
+                    .relative(
+                      path.resolve(
+                        compilation.options.output.path,
+                        path.dirname(plugin.childCompilationOutputName)
+                      ),
+                      compilation.options.output.path
+                    )
+                    .split(path.sep)
+                    .join('/') // If no public path was set get a relative url path
 
             if (publicPath.length && publicPath.substr(-1, 1) !== '/') {
               publicPath += '/'
             }
-            // Get chunks info as json
-            // Note: we're excluding stuff that we don't need to improve toJson serialization speed.
-            const chunkOnlyConfig = {
-              assets: false,
-              cached: false,
-              children: false,
-              chunks: true,
-              chunkModules: false,
-              chunkOrigins: false,
-              errorDetails: false,
-              hash: false,
-              modules: false,
-              reasons: false,
-              source: false,
-              timings: false,
-              version: false
-            }
+
             const allChunks = compilation.getStats().toJson(chunkOnlyConfig)
               .chunks
 
+            // prefetch file map
             let prefetches = {}
+            // prefetch chunk map
+            let prefetchChunks = {}
 
-            for (let i = 0; i < chunks.length; i++) {
-              const chunk = chunks[i]
+            console.log(allChunks, chunks)
 
-              let { prefetch } = chunk.childrenByOrder || {}
-              if (prefetch && Array.isArray(prefetch)) {
-                for (let f = 0; f < prefetch.length; f++) {
-                  const prefetchId = prefetch[f]
-                  const prefetchChunk = allChunks.find(
-                    ({ id }) => id === prefetchId
-                  )
-                  if (prefetchChunk) {
-                    let prefetchFiles = []
-                      .concat(prefetchChunk.files)
-                      .map(chunkFile => publicPath + chunkFile)
-
-                    prefetchFiles.forEach(file => {
-                      if (!prefetches[file]) {
-                        prefetches[file] = true
-                      }
-                    })
-                  }
-                }
-              }
+            function getChunkById(cid) {
+              return allChunks.find(({ id }) => id === cid)
             }
+
+            function readPrefetchs(chunk, isPrefetch) {
+              let prefetch = chunk.childrenByOrder.prefetch || []
+              const target = isPrefetch ? chunk.children : prefetch
+              if (isPrefetch) {
+                chunk.files.forEach(filename => {
+                  prefetches[publicPath + filename] = true
+                })
+              }
+              target.forEach(chunkId => {
+                if (!prefetchChunks[chunkId]) {
+                  prefetchChunks[chunkId] = true
+                  readPrefetchs(getChunkById(chunkId), true)
+                }
+              })
+            }
+
+            chunks.forEach(chunk => readPrefetchs(chunk))
 
             let appendedHead = Object.keys(prefetches)
               .filter(e => /css$/.test(e))
@@ -83,7 +87,7 @@ class WebpackResourceHintPlugin {
                 selfClosingTag: false,
                 voidTag: true,
                 attributes: {
-                  href: `${e}?${compilation.hash}`,
+                  href: e,
                   rel: 'prefetch'
                 }
               }))
@@ -94,7 +98,9 @@ class WebpackResourceHintPlugin {
             if (appendedHead.length > 0) {
               console.log(
                 chalk.blue('Append Links:'),
-                chalk.green.bold(Object.keys(prefetches).filter(e => /css$/.test(e)))
+                chalk.green.bold(
+                  Object.keys(prefetches).filter(e => /css$/.test(e))
+                )
               )
             } else {
               console.log(chalk.red('no css prefetched'))

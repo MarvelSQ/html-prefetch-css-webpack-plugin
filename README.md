@@ -84,7 +84,7 @@ button.innerText = "lazy load btn";
 button.addEventListener("click", () => {
   // use magic comments to mark module need be prefetch
   // webpack 4.6.0+ support
-  import(/* webpackChunkName: "lazy" */ /* webpackPrefetch: "true" */ "./lazy.js").then(
+  import(/* webpackChunkName: "lazy" */ /* webpackPrefetch: true */ "./lazy.js").then(
     module => {
       document.body.appendChild(module.default("<h2>Lazy load Content</h2>"));
     }
