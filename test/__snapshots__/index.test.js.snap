@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index html 1`] = `
+"<!DOCTYPE html>
+<html lang=\\"en\\">
+<head>
+  <meta charset=\\"UTF-8\\">
+  <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\">
+  <meta http-equiv=\\"X-UA-Compatible\\" content=\\"ie=edge\\">
+  <title>Html prefetch css webpack plugin</title>
+<link href=\\"moduleA.61f3b73fc0b34fafc6fb.css\\" rel=\\"prefetch\\" as=\\"style\\"><link href=\\"moduleB.61f3b73fc0b34fafc6fb.css\\" rel=\\"prefetch\\" as=\\"style\\"><link href=\\"index.61f3b73fc0b34fafc6fb.css?61f3b73fc0b34fafc6fb\\" rel=\\"stylesheet\\"></head>
+<body>
+  <div id=\\"root\\"></div>
+<script type=\\"text/javascript\\" src=\\"index.bundle.js?61f3b73fc0b34fafc6fb\\"></script></body>
+</html>"
+`;
+
+exports[`second html 1`] = `
+"<!DOCTYPE html>
+<html lang=\\"en\\">
+<head>
+  <meta charset=\\"UTF-8\\">
+  <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\">
+  <meta http-equiv=\\"X-UA-Compatible\\" content=\\"ie=edge\\">
+  <title>Html prefetch css webpack plugin</title>
+<link href=\\"moduleC.61f3b73fc0b34fafc6fb.css\\" rel=\\"prefetch\\" as=\\"style\\"></head>
+<body>
+  <div id=\\"root\\"></div>
+<script type=\\"text/javascript\\" src=\\"second.bundle.js?61f3b73fc0b34fafc6fb\\"></script></body>
+</html>"
+`;
