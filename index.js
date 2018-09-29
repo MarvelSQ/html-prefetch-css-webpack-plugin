@@ -56,8 +56,6 @@ class WebpackResourceHintPlugin {
             // prefetch chunk map
             let prefetchChunks = {}
 
-            console.log(allChunks, chunks)
-
             function getChunkById(cid) {
               return allChunks.find(({ id }) => id === cid)
             }
