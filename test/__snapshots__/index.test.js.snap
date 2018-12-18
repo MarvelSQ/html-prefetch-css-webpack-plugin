@@ -8,10 +8,10 @@ exports[`index html 1`] = `
   <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\">
   <meta http-equiv=\\"X-UA-Compatible\\" content=\\"ie=edge\\">
   <title>Html prefetch css webpack plugin</title>
-<link href=\\"moduleA.295aa45068be90d1b18d.css\\" rel=\\"prefetch\\"><link href=\\"moduleB.295aa45068be90d1b18d.css\\" rel=\\"prefetch\\"><link href=\\"index.295aa45068be90d1b18d.css?295aa45068be90d1b18d\\" rel=\\"stylesheet\\"></head>
+<link href=\\"moduleA.css\\" rel=\\"prefetch\\"><link href=\\"moduleB.css\\" rel=\\"prefetch\\"><link href=\\"index.css\\" rel=\\"stylesheet\\"></head>
 <body>
   <div id=\\"root\\"></div>
-<script type=\\"text/javascript\\" src=\\"index.bundle.js?295aa45068be90d1b18d\\"></script></body>
+<script type=\\"text/javascript\\" src=\\"index.bundle.js\\"></script></body>
 </html>"
 `;
 
@@ -23,9 +23,9 @@ exports[`second html 1`] = `
   <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\">
   <meta http-equiv=\\"X-UA-Compatible\\" content=\\"ie=edge\\">
   <title>Html prefetch css webpack plugin</title>
-<link href=\\"moduleC.295aa45068be90d1b18d.css\\" rel=\\"prefetch\\"></head>
+<link href=\\"moduleC.css\\" rel=\\"prefetch\\"></head>
 <body>
   <div id=\\"root\\"></div>
-<script type=\\"text/javascript\\" src=\\"second.bundle.js?295aa45068be90d1b18d\\"></script></body>
+<script type=\\"text/javascript\\" src=\\"second.bundle.js\\"></script></body>
 </html>"
 `;

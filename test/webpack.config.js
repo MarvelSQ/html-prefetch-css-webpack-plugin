@@ -13,7 +13,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    chunkFilename: '[name].[hash].bundle.js',
+    chunkFilename: '[name].bundle.js',
     filename: '[name].bundle.js'
   },
   module: {
@@ -27,18 +27,16 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       excludeChunks: ['second'],
-      template: path.resolve(__dirname, './index.html'),
-      hash: true
+      template: path.resolve(__dirname, './index.html')
     }),
     new HtmlWebpackPlugin({
       filename: 'second.html',
       excludeChunks: ['index'],
-      template: path.resolve(__dirname, './index.html'),
-      hash: true
+      template: path.resolve(__dirname, './index.html')
     }),
     new PrefetchCssWebpackPlugin(),
     new MiniCSSExtractPlugin({
-      filename: '[name].[hash].css'
+      filename: '[name].css'
     })
   ]
 }
